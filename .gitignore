@@ -1,0 +1,31 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+
+# Build and cache directories
+/bin/
+/pkg/
+/out/
+/dist/
+
+# Go modules
+go.sum
+go.work
+go.work.sum
+vendor/
+
+# Editor and OS files
+*.swp
+*.swo
+*.DS_Store
+*.idea/
+*.vscode/
+*.log
+
+# Dependency directories
+node_modules/
+

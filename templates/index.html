@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go Postman</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.10.0/jsoneditor.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.10.0/jsoneditor.min.css">
+</head>
+<body class="p-8 bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <div class="max-w-3xl w-full bg-white p-6 shadow-lg rounded-lg">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Go Postman</h1>
+
+        <div class="space-y-4">
+            <!-- URL Input -->
+            <div>
+                <label class="block font-medium text-gray-700">Request URL:</label>
+                <input id="url" class="w-full p-3 border border-gray-300 rounded-lg" type="text" placeholder="https://jsonplaceholder.typicode.com/posts">
+            </div>
+
+            <!-- Method Selection -->
+            <div>
+                <label class="block font-medium text-gray-700">Method:</label>
+                <select id="method" class="w-full p-3 border border-gray-300 rounded-lg">
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                    <option value="PUT">PUT</option>
+                    <option value="DELETE">DELETE</option>
+                </select>
+            </div>
+
+            <!-- Headers -->
+            <div>
+                <label class="block font-medium text-gray-700">Request Headers (JSON):</label>
+                <div id="headers-editor" class="border rounded" style="height: 150px;"></div>
+            </div>
+
+            <!-- Body -->
+            <div>
+                <label class="block font-medium text-gray-700">Request Body (JSON):</label>
+                <div id="body-editor" class="border rounded" style="height: 200px;"></div>
+            </div>
+
+            <!-- Send Button -->
+            <button onclick="sendRequest()" class="w-full bg-blue-600 text-white py-3 rounded-lg text-lg font-semibold shadow-md hover:bg-blue-700 transition">
+                Send Request 🚀
+            </button>
+
+            <!-- Response -->
+            <div>
+                <h2 class="text-xl font-bold text-gray-800 mt-6">Response:</h2>
+                <div id="response-editor" class="border rounded" style="height: 300px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let headersEditor, bodyEditor, responseEditor;
+
+        // Initialize JSONEditor for headers, body, and response
+        function initEditors() {
+            headersEditor = new JSONEditor(document.getElementById("headers-editor"), { mode: "code" });
+            bodyEditor = new JSONEditor(document.getElementById("body-editor"), { mode: "code" });
+            responseEditor = new JSONEditor(document.getElementById("response-editor"), { mode: "view" });
+
+            // Set default headers
+            headersEditor.set({ "Content-Type": "application/json" });
+
+            // Set default body
+            bodyEditor.set({ "title": "foo", "body": "bar" });
+        }
+
+        async function sendRequest() {
+            const url = document.getElementById("url").value;
+            const method = document.getElementById("method").value;
+            const headers = headersEditor.get();
+            const body = JSON.stringify(bodyEditor.get());
+
+            try {
+                const response = await fetch("/send-request", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ url, method, headers, body })
+                });
+
+                const result = await response.json();
+                responseEditor.set(result);
+            } catch (error) {
+                responseEditor.set({ error: error.message });
+            }
+        }
+
+        // Initialize JSON Editors on page load
+        window.onload = initEditors;
+    </script>
+
+</body>
+</html>
+
